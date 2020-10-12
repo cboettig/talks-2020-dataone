@@ -61,7 +61,7 @@ ggblank <- function() ggplot() + geom_blank() +
 
 layout: true
 background-color: #fdf6e3
-class: center, top
+class: left, top
 
 ---
 
@@ -259,7 +259,7 @@ content_id("co2_mm_mlo.txt")
 
 ---
 
-Lightweight provenance tracing
+# Lightweight provenance tracing
 
 
 ```{r}
@@ -268,10 +268,9 @@ library(prov)
 write_prov("co2_mm_mlo.txt")
 ```
 
+---
 
-----
-
-Tracking input and output data
+## Tracking input and output data
 
 ```{r}
 read_table("co2_mm_mlo.txt", comment = "#", 
@@ -282,11 +281,74 @@ ggsave("co2.png")
 
 ---
 
+## and write the provenance record
+
 ```{r}
 write_prov(data_in = "co2_mm_mlo.txt", 
            data_out = "co2.png",
            code = "index.Rmd")
 ```
+
+---
+
+## prov.json
+
+```
+"@graph": [
+    {
+      "id": "hash://sha256/3235fcbed61bba0fc832fc1d916aea2ac2d79b24b1abb354bbc60182c9ba9a3c",
+      "type": "Distribution",
+      "description": "output data",
+      "format": "image/png",
+      "identifier": "hash://sha256/3235fcbed61bba0fc832fc1d916aea2ac2d79b24b1abb354bbc60182c9ba9a3c",
+      "title": "co2.png",
+      "byteSize": 151576,
+      "wasDerivedFrom": "hash://sha256/47ad1215e774f85f9bdc26e6dce7af0a1b86cd78b3152799bb8d9ace9779bcee",
+      "wasGeneratedAtTime": [
+        "2020-10-12 21:34:08",
+        "2020-10-12 21:33:49"
+      ],
+      "wasGeneratedBy": "urn:uuid:f7f939c4-8a9a-42fb-bb20-17d85cf24451"
+    },
+    {
+      "id": "hash://sha256/47ad1215e774f85f9bdc26e6dce7af0a1b86cd78b3152799bb8d9ace9779bcee",
+      "type": "Distribution",
+      "description": "Input data",
+      "format": "text/plain",
+      "identifier": "hash://sha256/47ad1215e774f85f9bdc26e6dce7af0a1b86cd78b3152799bb8d9ace9779bcee",
+      "title": "co2_mm_mlo.txt",
+      "byteSize": 55378,
+      "wasGeneratedAtTime": [
+        "2020-10-12 23:12:57",
+        "2020-10-12 23:09:51",
+        "2020-10-12 21:13:43"
+      ]
+    },
+    {
+      "id": "hash://sha256/dac5eb33527963e751a909c17525085c61f37b1ebd5f552c55caf51c05aeda10",
+      "type": [
+        "Distribution",
+        "SoftwareSourceCode"
+      ],
+      "description": "R code",
+      "format": "application/R",
+      "identifier": "hash://sha256/dac5eb33527963e751a909c17525085c61f37b1ebd5f552c55caf51c05aeda10",
+      "title": "index.Rmd"
+    },
+    {
+      "id": "hash://sha256/ecd11fb3fdec75cfc9c379f8c844786b104e042bb0280b1cc8ee0c79420e06a9",
+      "type": [
+        "Distribution",
+        "SoftwareSourceCode"
+      ],
+      "description": "R code",
+      "format": "application/R",
+      "identifier": "hash://sha256/ecd11fb3fdec75cfc9c379f8c844786b104e042bb0280b1cc8ee0c79420e06a9",
+      "title": "index.Rmd"
+    },
+  
+```
+
 
 ---
 
