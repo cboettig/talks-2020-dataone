@@ -1,0 +1,189 @@
+{
+  "@context": {
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "prov": "http://www.w3.org/ns/prov#",
+    "dct": "http://purl.org/dc/terms/",
+    "sdo": "http://schema.org/",
+    "cito": "http://purl.org/spar/cito/",
+    "id": "@id",
+    "type": "@type",
+    "identifier": {
+      "@id": "dct:identifier",
+      "@type": "@id"
+    },
+    "title": "dct:title",
+    "description": "dct:description",
+    "issued": "dct:issued",
+    "format": "dct:format",
+    "mediaType": "dcat:mediaType",
+    "keyword": "dcat:keyword",
+    "theme": "dcat:theme",
+    "modified": "dcat:modified",
+    "downloadURL": "dcat:downloadURL",
+    "publisher": {
+      "@id": "dcat:publisher",
+      "@type": "@id"
+    },
+    "contactPoint": {
+      "@id": "dcat:contactPoint",
+      "@type": "@id"
+    },
+    "spatial": {
+      "@id": "dct:spatial",
+      "@type": "@id"
+    },
+    "temporal": {
+      "@id": "dct:temporal",
+      "@type": "@id"
+    },
+    "license": {
+      "@id": "dct:license",
+      "@type": "@id"
+    },
+    "creator": {
+      "@id": "dcat:creator",
+      "@type": "@id"
+    },
+    "compressFormat": "dcat:compressFormat",
+    "byteSize": "dcat:byteSize",
+    "wasGeneratedAtTime": "prov:wasGeneratedAtTime",
+    "startedAtTime": "prov:startedAtTime",
+    "endedAtTime": "prov:startedAtTime",
+    "wasDerivedFrom": {
+      "@id": "prov:wasDerivedFrom",
+      "@type": "@id"
+    },
+    "wasGeneratedBy": {
+      "@id": "prov:wasGeneratedBy",
+      "@type": "@id"
+    },
+    "generated": {
+      "@id": "prov:generated",
+      "@type": "@id"
+    },
+    "used": {
+      "@id": "prov:used",
+      "@type": "@id"
+    },
+    "wasRevisionOf": {
+      "@id": "prov:wasRevisionOf",
+      "@type": "@id"
+    },
+    "isDocumentedBy": {
+      "@id": "cito:isDocumentedBy",
+      "@type": "@id"
+    },
+    "distribution": {
+      "@id": "dcat:distribution",
+      "@type": "@id"
+    },
+    "Dataset": "dcat:Dataset",
+    "Activity": "prov:Activity",
+    "Distribution": "dcat:Distribution",
+    "SoftwareSourceCode": "sdo:SoftwareSourceCode"
+  },
+  "@graph": [
+    {
+      "id": "hash://sha256/3235fcbed61bba0fc832fc1d916aea2ac2d79b24b1abb354bbc60182c9ba9a3c",
+      "type": "Distribution",
+      "description": "output data",
+      "format": "image/png",
+      "identifier": "hash://sha256/3235fcbed61bba0fc832fc1d916aea2ac2d79b24b1abb354bbc60182c9ba9a3c",
+      "title": "co2.png",
+      "byteSize": 151576,
+      "wasDerivedFrom": "hash://sha256/47ad1215e774f85f9bdc26e6dce7af0a1b86cd78b3152799bb8d9ace9779bcee",
+      "wasGeneratedAtTime": [
+        "2020-10-12 21:34:08",
+        "2020-10-12 21:33:49"
+      ],
+      "wasGeneratedBy": "urn:uuid:f7f939c4-8a9a-42fb-bb20-17d85cf24451"
+    },
+    {
+      "id": "hash://sha256/47ad1215e774f85f9bdc26e6dce7af0a1b86cd78b3152799bb8d9ace9779bcee",
+      "type": "Distribution",
+      "description": "Input data",
+      "format": "text/plain",
+      "identifier": "hash://sha256/47ad1215e774f85f9bdc26e6dce7af0a1b86cd78b3152799bb8d9ace9779bcee",
+      "title": "co2_mm_mlo.txt",
+      "byteSize": 55378,
+      "wasGeneratedAtTime": [
+        "2020-10-12 23:12:57",
+        "2020-10-12 23:09:51",
+        "2020-10-12 21:13:43"
+      ]
+    },
+    {
+      "id": "hash://sha256/dac5eb33527963e751a909c17525085c61f37b1ebd5f552c55caf51c05aeda10",
+      "type": [
+        "Distribution",
+        "SoftwareSourceCode"
+      ],
+      "description": "R code",
+      "format": "application/R",
+      "identifier": "hash://sha256/dac5eb33527963e751a909c17525085c61f37b1ebd5f552c55caf51c05aeda10",
+      "title": "index.Rmd"
+    },
+    {
+      "id": "hash://sha256/ecd11fb3fdec75cfc9c379f8c844786b104e042bb0280b1cc8ee0c79420e06a9",
+      "type": [
+        "Distribution",
+        "SoftwareSourceCode"
+      ],
+      "description": "R code",
+      "format": "application/R",
+      "identifier": "hash://sha256/ecd11fb3fdec75cfc9c379f8c844786b104e042bb0280b1cc8ee0c79420e06a9",
+      "title": "index.Rmd"
+    },
+    {
+      "id": "hash://sha256/f33881bb32d4793d290978b9f5a52d24d549ecfe90b70602118b5b7705aba693",
+      "type": "Distribution",
+      "description": "output data",
+      "format": "image/png",
+      "identifier": "hash://sha256/f33881bb32d4793d290978b9f5a52d24d549ecfe90b70602118b5b7705aba693",
+      "title": "co2.png",
+      "byteSize": 151186,
+      "wasDerivedFrom": "hash://sha256/47ad1215e774f85f9bdc26e6dce7af0a1b86cd78b3152799bb8d9ace9779bcee",
+      "wasGeneratedAtTime": [
+        "2020-10-12 23:12:58",
+        "2020-10-12 23:09:52"
+      ],
+      "wasGeneratedBy": [
+        "urn:uuid:d008a63c-8ae4-4c82-96ec-4f99e687ec0a",
+        "urn:uuid:89dc4324-fc93-4419-9807-3d0043be5d39"
+      ]
+    },
+    {
+      "id": "urn:uuid:89dc4324-fc93-4419-9807-3d0043be5d39",
+      "type": "Activity",
+      "description": "Running R script",
+      "generated": "hash://sha256/f33881bb32d4793d290978b9f5a52d24d549ecfe90b70602118b5b7705aba693",
+      "endedAtTime": "2020-10-12 23:09:52",
+      "used": [
+        "hash://sha256/47ad1215e774f85f9bdc26e6dce7af0a1b86cd78b3152799bb8d9ace9779bcee",
+        "hash://sha256/dac5eb33527963e751a909c17525085c61f37b1ebd5f552c55caf51c05aeda10"
+      ]
+    },
+    {
+      "id": "urn:uuid:d008a63c-8ae4-4c82-96ec-4f99e687ec0a",
+      "type": "Activity",
+      "description": "Running R script",
+      "generated": "hash://sha256/f33881bb32d4793d290978b9f5a52d24d549ecfe90b70602118b5b7705aba693",
+      "endedAtTime": "2020-10-12 23:12:58",
+      "used": [
+        "hash://sha256/47ad1215e774f85f9bdc26e6dce7af0a1b86cd78b3152799bb8d9ace9779bcee",
+        "hash://sha256/dac5eb33527963e751a909c17525085c61f37b1ebd5f552c55caf51c05aeda10"
+      ]
+    },
+    {
+      "id": "urn:uuid:f7f939c4-8a9a-42fb-bb20-17d85cf24451",
+      "type": "Activity",
+      "description": "Running R script",
+      "generated": "hash://sha256/3235fcbed61bba0fc832fc1d916aea2ac2d79b24b1abb354bbc60182c9ba9a3c",
+      "endedAtTime": "2020-10-12 21:34:08",
+      "used": [
+        "hash://sha256/47ad1215e774f85f9bdc26e6dce7af0a1b86cd78b3152799bb8d9ace9779bcee",
+        "hash://sha256/ecd11fb3fdec75cfc9c379f8c844786b104e042bb0280b1cc8ee0c79420e06a9"
+      ]
+    }
+  ]
+}

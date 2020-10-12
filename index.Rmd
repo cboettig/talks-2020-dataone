@@ -1,0 +1,297 @@
+---
+author: "Carl Boettiger"
+institute: "UC Berkeley"
+date: "`r Sys.Date()`"
+title: "Content-based Identifiers for Iterative Forecasts: A Proposal"
+output:
+  xaringan::moon_reader:
+    css: ["default", "solarized-light.css"]
+    lib_dir: libs
+    seal: false
+    nature:
+      highlightStyle: "solarized-light"
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "%current%"
+    df_print: paged
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(#dev.args=list(bg="transparent"), 
+                      message=FALSE, 
+                      warning=FALSE,
+                      fig.width=8, 
+                      fig.height=5, 
+                      cache = TRUE)
+
+library(tidyverse)
+
+library(icon)
+library(ggthemes)
+library(magick)
+library(gganimate)
+library(animation)
+library(patchwork)
+
+
+
+theme_set(theme_solarized(base_size=16))
+scale_colour_discrete <- function(...) scale_colour_solarized()
+scale_fill_discrete <- function(...) scale_fill_solarized()
+pal <- solarized_pal()(6)
+txtcolor <- "#586e75"
+
+ggimage <- function(path, transparent = FALSE){
+  img <- magick::image_read(path)
+  if(transparent)  img <- magick::image_transparent(img, "white")
+  ggplot2::ggplot() + 
+  ggplot2::annotation_raster(img, 
+                    xmin=-Inf, xmax=Inf, ymin=-Inf, ymax=Inf) +
+    theme(axis.line = element_blank(), 
+          panel.background = element_blank(),
+          axis.ticks = element_blank(), 
+          axis.text = element_blank(), 
+          axis.title = element_blank())
+}
+ggblank <- function() ggplot() + geom_blank() + 
+  theme(axis.line = element_blank(), panel.background = element_blank())
+
+```
+
+layout: true
+background-color: #fdf6e3
+class: center, top
+
+---
+
+# Content-Based Identifiers For Iterative Forecasts: 
+
+## A Proposal
+
+<div class="my-footer">
+
+<a href="https://carlboettiger.info"> `r icon::fa("user")` Carl Boettiger</a> | 
+<a href="https://berkeley.edu"> `r icon::fa("briefcase")` UC Berkeley</a> | 
+<a href="https://twitter.com/cboettig"> `r icon::fa("twitter")` @cboettig</a>
+
+</div>
+
+
+---
+
+# Most scientific scripts have to read in data.
+
+---
+
+# In R, sometimes we read data in like this:
+
+```{r}
+df <- 
+read_tsv("/home/rstudio/Documents/cboettig/talks-2020-dataone/vostok.icecore.co2")
+```
+
+---
+
+# A local path is a bit more portable...
+
+```{r}
+df <- read_tsv("vostok.icecore.co2")
+```
+
+--
+
+## ... if you have the data file! 
+
+---
+
+# Reading from URLs gets around this...
+
+```{r}
+url <- paste0("https://knb.ecoinformatics.org/", 
+              "knb/d1/mn/v2/object/", 
+              "ess-dive-457358fdc81d3a5-20180726T203952542")
+df <- read_tsv(url)
+```
+
+--
+
+## ... but we don't want to re-download every time we re-run
+
+---
+
+# Caching a copy can help...
+
+```{r}
+library(pins)
+pins::pin(url)
+```
+
+--
+
+## ... but links still rot
+
+---
+
+# DOIs can solve link rot
+
+
+## but you can almost never put DOIs into scripts...
+
+```{r}
+download.file("https://doi.org/10.3334/CDIAC/ATG.009",
+              "vostok.icecore.co2")
+```
+
+
+---
+
+# So what should we do?
+
+---
+
+
+# Two observations:
+
+#### Reproducible code must read in the same bytes every time
+#### Checksums, such as `SHA-256`, are the gold standard way to confirm that.
+
+---
+
+# A proposal
+
+## What if we could read in content by its SHA-256 hash?
+
+```{r}
+library(contentid)
+content_id("vostok.icecore.co2")
+```
+
+---
+
+```{r}
+file <- resolve("hash://sha256/9412325831dab22aeebdd674b6eb53ba6b7bdd04bb99a4dbb21ddff646287e37")
+content_id(file)
+```
+
+---
+
+## whoops, long hashes are liable to be cut off
+
+```{r}
+file <- resolve("hash://sha256/9412325831dab22aeebdd674b")
+```
+## Fortunately, that's not a problem!
+
+```{r}
+content_id(file)
+```
+
+Recall that hashes encode the most significant bytes first
+
+---
+
+
+# So where is the data coming from?
+
+```{r}
+sources <- contentid::query_sources("hash://sha256/9412325831dab22aeebdd674b6eb53ba6b7bdd04bb99a4dbb21ddff646287e37")
+sources
+```
+
+---
+
+# Content-based identifers are 
+# location agnostic
+
+---
+
+# LOCKSS:
+
+## Lots of copies keeps stuff safe
+
+---
+
+# How?
+
+---
+
+# Registering a location:
+
+```{r}
+url <- paste0("https://knb.ecoinformatics.org/", 
+              "knb/d1/mn/v2/object/", 
+              "ess-dive-457358fdc81d3a5-20180726T203952542")
+register(url)
+```
+
+---
+
+# Existing Registeries
+
+## DataONE 
+
+If you publish to DataONE using SHA-256 sum, or know data uses it, you can query for it.
+
+## GitHub / Software Heritage
+
+Trigger a Software Heritage API of a repository, query content by hash
+
+
+---
+
+# But WAIT! 
+
+# I only want the latest data!
+
+---
+
+# Access the latest data
+
+(Mauna Loa CO2 data, updated monthly)
+
+
+```{r}
+download.file("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
+              "co2_mm_mlo.txt")
+content_id("co2_mm_mlo.txt")
+```
+
+---
+
+Lightweight provenance tracing
+
+
+```{r}
+# remotes::install_github("cboettig/prov")
+library(prov)
+write_prov("co2_mm_mlo.txt")
+```
+
+
+----
+
+Tracking input and output data
+
+```{r}
+read_table("co2_mm_mlo.txt", comment = "#", 
+         col_names = c("", "", "date", "co2", "", "", "", "")) %>%
+  ggplot(aes(date, co2)) + geom_line()
+ggsave("co2.png")
+```
+
+---
+
+```{r}
+write_prov(data_in = "co2_mm_mlo.txt", 
+           data_out = "co2.png",
+           code = "index.Rmd")
+```
+
+---
+
+# Richer examples: an iterative forecast
+
+- [Identifiers for Iterative Forecasts](https://cboettig.github.io/contentid/articles/technotes/identifiers-for-iterative-forecasting.html)
+- <https://github.com/eco4cast/neon4cast-beetles>
+- [JSON-LD Playground](https://tinyurl.com/y58no3fq)

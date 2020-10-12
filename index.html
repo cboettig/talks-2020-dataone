@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Content-based Identifiers for Iterative Forecasts: A Proposal</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Carl Boettiger" />
+    <meta name="date" content="2020-10-12" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+    <script src="libs/pagedtable-1.1/js/pagedtable.js"></script>
+    <link href="libs/font-awesome-5.3.1/css/fontawesome-all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="solarized-light.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+layout: true
+background-color: #fdf6e3
+class: center, top
+
+---
+
+# Content-Based Identifiers For Iterative Forecasts: 
+
+## A Proposal
+
+&lt;div class="my-footer"&gt;
+
+&lt;a href="https://carlboettiger.info"&gt; <i class="fas  fa-user "></i> Carl Boettiger&lt;/a&gt; | 
+&lt;a href="https://berkeley.edu"&gt; <i class="fas  fa-briefcase "></i> UC Berkeley&lt;/a&gt; | 
+&lt;a href="https://twitter.com/cboettig"&gt; <i class="fab  fa-twitter "></i> @cboettig&lt;/a&gt;
+
+&lt;/div&gt;
+
+
+---
+
+# Most scientific scripts have to read in data.
+
+---
+
+# In R, sometimes we read data in like this:
+
+
+```r
+df &lt;- 
+read_tsv("/home/rstudio/Documents/cboettig/talks-2020-dataone/vostok.icecore.co2")
+```
+
+---
+
+# A local path is a bit more portable...
+
+
+```r
+df &lt;- read_tsv("vostok.icecore.co2")
+```
+
+--
+
+## ... if you have the data file! 
+
+---
+
+# Reading from URLs gets around this...
+
+
+```r
+url &lt;- paste0("https://knb.ecoinformatics.org/", 
+              "knb/d1/mn/v2/object/", 
+              "ess-dive-457358fdc81d3a5-20180726T203952542")
+df &lt;- read_tsv(url)
+```
+
+--
+
+## ... but we don't want to re-download every time we re-run
+
+---
+
+# Caching a copy can help...
+
+
+```r
+library(pins)
+pins::pin(url)
+```
+
+--
+
+## ... but links still rot
+
+---
+
+# DOIs can solve link rot
+
+
+## but you can almost never put DOIs into scripts...
+
+
+```r
+download.file("https://doi.org/10.3334/CDIAC/ATG.009",
+              "vostok.icecore.co2")
+```
+
+
+---
+
+# So what should we do?
+
+---
+
+
+# Two observations:
+
+#### Reproducible code must read in the same bytes every time
+#### Checksums, such as `SHA-256`, are the gold standard way to confirm that.
+
+---
+
+# A proposal
+
+## What if we could read in content by its SHA-256 hash?
+
+
+```r
+library(contentid)
+content_id("vostok.icecore.co2")
+```
+
+```
+## [1] "hash://sha256/1318ec55df118fb6091b9af1ec1bd1a712a0ee9ade2695edd1fb65c057282894"
+```
+
+---
+
+
+```r
+file &lt;- resolve("hash://sha256/9412325831dab22aeebdd674b6eb53ba6b7bdd04bb99a4dbb21ddff646287e37")
+content_id(file)
+```
+
+```
+## [1] "hash://sha256/9412325831dab22aeebdd674b6eb53ba6b7bdd04bb99a4dbb21ddff646287e37"
+```
+
+---
+
+## whoops, long hashes are liable to be cut off
+
+
+```r
+file &lt;- resolve("hash://sha256/9412325831dab22aeebdd674b")
+```
+## Fortunately, that's not a problem!
+
+
+```r
+content_id(file)
+```
+
+```
+## [1] "hash://sha256/9412325831dab22aeebdd674b6eb53ba6b7bdd04bb99a4dbb21ddff646287e37"
+```
+
+Recall that hashes encode the most significant bytes first
+
+---
+
+
+# So where is the data coming from?
+
+
+```r
+sources &lt;- contentid::query_sources("hash://sha256/9412325831dab22aeebdd674b6eb53ba6b7bdd04bb99a4dbb21ddff646287e37")
+sources
+```
+
+&lt;div data-pagedtable="false"&gt;
+  &lt;script data-pagedtable-source type="application/json"&gt;
+{"columns":[{"label":["source"],"name":[1],"type":["chr"],"align":["left"]},{"label":["date"],"name":[2],"type":["S3: POSIXct"],"align":["right"]}],"data":[{"1":"/home/rstudio/.local/share/contentid/data/94/12/9412325831dab22aeebdd674b6eb53ba6b7bdd04bb99a4dbb21ddff646287e37","2":"2020-08-17 23:45:34"},{"1":"https://archive.softwareheritage.org/api/1/content/sha256:9412325831dab22aeebdd674b6eb53ba6b7bdd04bb99a4dbb21ddff646287e37/raw/","2":"2020-10-12 23:12:46"},{"1":"https://knb.ecoinformatics.org/knb/d1/mn/v2/object/ess-dive-457358fdc81d3a5-20180726T203952542","2":"2020-10-12 23:09:48"},{"1":"https://minio.thelio.carlboettiger.info/shared-data/vostok.icecore.co2","2":"2020-10-12 21:02:25"},{"1":"https://github.com/espm-157/climate-template/releases/download/data/vostok.icecore.co2","2":"2020-09-17 05:48:28"},{"1":"https://cdiac.ess-dive.lbl.gov/ftp/trends/co2/vostok.icecore.co2","2":"2020-09-14 18:22:21"},{"1":"https://knb.ecoinformatics.org/knb/d1/mn/v2/object/ess-dive-f8d52384ece0ba9-20180716T154049822990","2":"2020-08-10 00:09:02"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  &lt;/script&gt;
+&lt;/div&gt;
+
+---
+
+# Content-based identifers are 
+# location agnostic
+
+---
+
+# LOCKSS:
+
+## Lots of copies keeps stuff safe
+
+---
+
+# How?
+
+---
+
+# Registering a location:
+
+
+```r
+url &lt;- paste0("https://knb.ecoinformatics.org/", 
+              "knb/d1/mn/v2/object/", 
+              "ess-dive-457358fdc81d3a5-20180726T203952542")
+register(url)
+```
+
+```
+## [1] "hash://sha256/9412325831dab22aeebdd674b6eb53ba6b7bdd04bb99a4dbb21ddff646287e37"
+```
+
+---
+
+# Existing Registeries
+
+## DataONE 
+
+If you publish to DataONE using SHA-256 sum, or know data uses it, you can query for it.
+
+## GitHub / Software Heritage
+
+Trigger a Software Heritage API of a repository, query content by hash
+
+
+---
+
+# But WAIT! 
+
+# I only want the latest data!
+
+---
+
+# Access the latest data
+
+(Mauna Loa CO2 data, updated monthly)
+
+
+
+```r
+download.file("ftp://aftp.cmdl.noaa.gov/products/trends/co2/co2_mm_mlo.txt",
+              "co2_mm_mlo.txt")
+content_id("co2_mm_mlo.txt")
+```
+
+```
+## [1] "hash://sha256/47ad1215e774f85f9bdc26e6dce7af0a1b86cd78b3152799bb8d9ace9779bcee"
+```
+
+---
+
+Lightweight provenance tracing
+
+
+
+```r
+# remotes::install_github("cboettig/prov")
+library(prov)
+write_prov("co2_mm_mlo.txt")
+```
+
+
+----
+
+Tracking input and output data
+
+
+```r
+read_table("co2_mm_mlo.txt", comment = "#", 
+         col_names = c("", "", "date", "co2", "", "", "", "")) %&gt;%
+  ggplot(aes(date, co2)) + geom_line()
+```
+
+![](index_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+
+```r
+ggsave("co2.png")
+```
+
+---
+
+
+```r
+write_prov(data_in = "co2_mm_mlo.txt", 
+           data_out = "co2.png",
+           code = "index.Rmd")
+```
+
+---
+
+# Richer examples: an iterative forecast
+
+- [Identifiers for Iterative Forecasts](https://cboettig.github.io/contentid/articles/technotes/identifiers-for-iterative-forecasting.html)
+- &lt;https://github.com/eco4cast/neon4cast-beetles&gt;
+- [JSON-LD Playground](https://tinyurl.com/y58no3fq)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "solarized-light",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"slideNumberFormat": "%current%"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
